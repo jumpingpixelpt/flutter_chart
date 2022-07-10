@@ -102,8 +102,10 @@ class LinePainter {
     for (var point in points) {
       path.lineTo(point.x.toDouble(), point.y.toDouble());
     }
-
+    paint.color = Colors.grey;
     canvas.drawPath(path, paint);
+
+    
   }
 
   /// Draws dashed lines lines between each point.

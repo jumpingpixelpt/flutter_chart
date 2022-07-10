@@ -14,6 +14,7 @@
 // limitations under the License.
 
 import 'dart:math' show min;
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 /// Strategy for building legend from legend entry widgets.
@@ -82,13 +83,11 @@ class TabularLegendLayout implements LegendLayout {
   Widget build(BuildContext context, List<Widget> legendEntries) {
     final paddedLegendEntries = ((cellPadding == null)
         ? legendEntries
-        : legendEntries
-            .map((entry) => new Padding(padding: cellPadding!, child: entry))
-            .toList());
-
-    return isHorizontalFirst
-        ? _buildHorizontalFirst(paddedLegendEntries)
-        : _buildVerticalFirst(paddedLegendEntries);
+        : legendEntries.map((entry) => new Padding(padding: cellPadding!, child: entry)).toList());
+    return SizedBox(
+      height: 200,
+    );
+   // return isHorizontalFirst ? _buildHorizontalFirst(paddedLegendEntries) : _buildVerticalFirst(paddedLegendEntries);
   }
 
   @override
@@ -100,32 +99,24 @@ class TabularLegendLayout implements LegendLayout {
       cellPadding == o.cellPadding;
 
   @override
-  int get hashCode => hashValues(
-      desiredMaxRows, desiredMaxColumns, isHorizontalFirst, cellPadding);
+  int get hashCode => hashValues(desiredMaxRows, desiredMaxColumns, isHorizontalFirst, cellPadding);
 
   Widget _buildHorizontalFirst(List<Widget> legendEntries) {
-    final maxColumns = (desiredMaxColumns == _noLimit)
-        ? legendEntries.length
-        : min(legendEntries.length, desiredMaxColumns);
+    final maxColumns =
+        (desiredMaxColumns == _noLimit) ? legendEntries.length : min(legendEntries.length, desiredMaxColumns);
 
     final rows = <TableRow>[];
     for (var i = 0; i < legendEntries.length; i += maxColumns) {
-      rows.add(new TableRow(
-          children: legendEntries
-              .sublist(i, min(i + maxColumns, legendEntries.length))
-              .toList()));
+      rows.add(new TableRow(children: legendEntries.sublist(i, min(i + maxColumns, legendEntries.length)).toList()));
     }
 
     return _buildTableFromRows(rows);
   }
 
   Widget _buildVerticalFirst(List<Widget> legendEntries) {
-    final maxRows = (desiredMaxRows == _noLimit)
-        ? legendEntries.length
-        : min(legendEntries.length, desiredMaxRows);
+    final maxRows = (desiredMaxRows == _noLimit) ? legendEntries.length : min(legendEntries.length, desiredMaxRows);
 
-    final rows =
-        new List.generate(maxRows, (_) => new TableRow(children: <Widget>[]));
+    final rows = new List.generate(maxRows, (_) => new TableRow(children: <Widget>[]));
     for (var i = 0; i < legendEntries.length; i++) {
       rows[i % maxRows].children!.add(legendEntries[i]);
     }
@@ -138,16 +129,14 @@ class TabularLegendLayout implements LegendLayout {
 
     // Pad rows to the max column count, because each TableRow in a table is
     // required to have the same number of children.
-    final columnCount = rows
-        .map((r) => r.children!.length)
-        .fold<int>(0, (max, current) => (current > max) ? current : max);
+    final columnCount =
+        rows.map((r) => r.children!.length).fold<int>(0, (max, current) => (current > max) ? current : max);
 
     for (var i = 0; i < rows.length; i++) {
       final rowChildren = rows[i].children;
       final padCount = columnCount - rowChildren!.length;
       if (padCount > 0) {
-        rowChildren
-            .addAll(new Iterable<Padding>.generate(padCount, (_) => padWidget));
+        rowChildren.addAll(new Iterable<Padding>.generate(padCount, (_) => padWidget));
       }
     }
 
@@ -155,7 +144,6 @@ class TabularLegendLayout implements LegendLayout {
     // Sizing the column width using [IntrinsicColumnWidth] is expensive per
     // Flutter's documentation, but has to be used if the table is desired to
     // have a width that is tight on each column.
-    return new Table(
-        children: rows, defaultColumnWidth: new IntrinsicColumnWidth());
+    return new Table(children: rows, defaultColumnWidth: new IntrinsicColumnWidth());
   }
 }

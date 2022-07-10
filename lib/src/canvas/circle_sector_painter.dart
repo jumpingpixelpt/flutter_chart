@@ -59,7 +59,9 @@ class CircleSectorPainter {
 
     final centerOffset = new Offset(center.x.toDouble(), center.y.toDouble());
 
-    final isFullCircle = endAngle - startAngle == 2 * pi;
+    final isFullCircle = startAngle != null &&
+        endAngle != null &&
+        endAngle - startAngle == 2 * pi;
 
     final midpointAngle = (endAngle + startAngle) / 2;
 
